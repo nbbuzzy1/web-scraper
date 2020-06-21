@@ -5,8 +5,17 @@ import pprint
 imporant_stories = []
 
 
-def sort_stories_by_votes(hnlist):
-    return sorted(hnlist, key=lambda k: k['votes'], reverse=True)
+def scape_hn(pages):
+    for page_number in range(pages):
+        page = requests.get(
+            f'https://news.ycombinator.com/news?p={page_number + 1}')
+        soup = BeautifulSoup(page.text, 'html.parser')
+        links = soup.select('.storylink')
+        subtext = soup.select('.subtext')
+
+        create_custom_hn(links, subtext)
+
+    return sort_stories_by_votes(imporant_stories)
 
 
 def create_custom_hn(links, subtext):
@@ -25,17 +34,8 @@ def create_custom_hn(links, subtext):
                 })
 
 
-def scape_hn(pages):
-    for page_number in range(pages):
-        page = requests.get(
-            f'https://news.ycombinator.com/news?p={page_number + 1}')
-        soup = BeautifulSoup(page.text, 'html.parser')
-        links = soup.select('.storylink')
-        subtext = soup.select('.subtext')
-
-        create_custom_hn(links, subtext)
-
-    return sort_stories_by_votes(imporant_stories)
+def sort_stories_by_votes(hnlist):
+    return sorted(hnlist, key=lambda k: k['votes'], reverse=True)
 
 
 pprint.pprint(scape_hn(5))
